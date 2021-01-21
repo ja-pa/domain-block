@@ -1,0 +1,21 @@
+config rule
+	option start_time '10:00:00'
+	option stop_time '12:00:00'
+	option weekdays 'Sun Mon Wed Sat'
+	option name 'facebook'
+	option description 'Block all facebook related domains.'
+	option enabled 1
+	option file ''
+	option url 'https://raw.githubusercontent.com/ja-pa/Social-media-Blocklists/rpz/facebook.rpz'
+
+
+config rule
+	option start_time '10:00:00'
+	option stop_time '13:00:00'
+	option weekdays 'Sun Mon Wed Thu Sat'
+	option name 'youtube'
+	option description 'Block all youtube related domains.'
+	option enabled 1
+	option file ''
+	option url 'https://raw.githubusercontent.com/ja-pa/Social-media-Blocklists/rpz/youtube.rpz'
+

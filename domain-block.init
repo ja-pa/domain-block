@@ -1,0 +1,78 @@
+#!/bin/sh /etc/rc.common
+
+START=52
+STOP=52
+
+USE_PROCD=1
+
+match_weekday() {
+	local weekday="$1"
+	tmp_day="$(date '+%a')"
+
+	if [ "$weekday" == "$tmp_day" ]; then
+		echo match
+		return 0
+	fi
+	return 1
+}
+
+
+match_time() {
+	local start_time="$1"
+	local stop_time="$2"
+	local now_sec
+
+	if [ -z "$start_time" ] || [ -z "$stop_time" ]; then
+		# we need set both
+		return 1
+	fi
+
+	now_sec=$(date +"%s")
+	start_sec=$(date -d "$start_time" +"%s")
+	stop_sec=$(date -d "$stop_time" +"%s")
+
+	if [[ "$now_sec" -ge "$start_sec" ]] && [[ "$now_sec" -le "$stop_sec" ]]; then
+		echo time match
+		echo "$start_time - $stop_time"
+		echo  "$now_sec" -ge "$start_sec" ,  "$now_sec" -le "$stop_sec"
+		echo "$start_sec - $stop_sec"
+		echo "$now_sec"
+		return 0
+	fi
+}
+
+parse_rule_hook_conf() {
+	local config="$1"
+	config_get name "$config" name
+	config_get description "$config" description
+	config_get url "$config" url
+	config_get weekdays "$config" weekdays
+	config_get_bool enabled "$config" enabled
+	config_get stop_time "$config" stop_time
+	config_get start_time "$config" start_time
+
+	echo "======================="
+	echo $name
+	echo $description
+	echo $url
+	echo $weekdays
+	echo $enabled
+	echo $start_time
+	echo $stop_time
+
+	for i in $weekdays;
+	do
+		echo ccc $i
+		if match_weekday "$i"; then
+			match_time "$start_time" "$stop_time"
+		fi
+	done
+}
+
+start_service() {
+	# clean config
+	config_load domain-block
+
+	# load and run tor-hs hooks
+	config_foreach parse_rule_hook_conf rule
+}
